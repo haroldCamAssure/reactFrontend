@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 
 const Upload = () => {
-  const [file, setFile] = useState(null);
+  const [jsonString, setJsonString] = useState('');
   const [collection, setCollection] = useState([]);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleJsonStringChange = (e) => {
+    setJsonString(e.target.value);
   };
 
   const handleUpload = () => {
-    const formData = new FormData();
-    formData.append('file', file);
+    const jsonData = JSON.parse(jsonString);
     fetch('http://localhost:3000/upload', {
       method: 'POST',
-      body: formData
+      body: JSON.stringify(jsonData),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
     .then((response) => response.json())
     .then((data) => {
       setCollection(data.updated_collection);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
     });
   };
 
+
   return (
     <div>
-      <input type="file" onChange={handleFileChange} />
+      <textarea onChange={handleJsonStringChange} />
       <button onClick={handleUpload}>Upload</button>
       <div>
         {collection.map((num, index) => (
